@@ -32,7 +32,7 @@ public class MatriksKecepatan {
         data = new String[M][N];
         for (int i=0;i<M;i++){
             for(int j=0;j<N;j++){
-                data[i][j]=Float.toString(i+j);
+                data[i][j]=Float.toString(0f);
             }
         }
     }

@@ -227,9 +227,10 @@ public class Penggambar {
     // ------ fresnel volume
     
     public void tes() {
+
         FresnelVolume F = new FresnelVolume(MK);
         OMK = F.MK;
-        MK = F.MK;
+        MK = F.RataMK;
 //        garis = F.garis;
                 //Raypath(F.getReceiver(), new Point(40,40), F.getSource());
         
