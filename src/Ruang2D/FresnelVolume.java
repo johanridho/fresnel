@@ -98,7 +98,7 @@ public class FresnelVolume {
         
         while(t3.isAlive() ||t4.isAlive() ||t0.isAlive()){          //loop utk memastikan thread sudah mati smua
             
-        }
+        }                
         
         hitungRataMK();
         
@@ -343,12 +343,23 @@ public class FresnelVolume {
         for (int i=0;i<MK.getP();i++){
             for(int j=0;j<MK.getL();j++){
                 
-                float total = 0f;
+                float total = 0f;       
+                int jumlah0 = 0;
+                
+//                for (int k=0; k<FMK.length; k++) {                
+//                        total += Float.valueOf(FMK[k].data[i][j]);                    
+//                }
+//                total /= (FMK.length);
                 
                 for (int k=0; k<FMK.length; k++) {
-                    total += Float.valueOf(FMK[k].data[i][j]);
+                    if(Float.valueOf(FMK[k].data[i][j])==0.0 || Float.valueOf(FMK[k].data[i][j]).isNaN() ){
+                        jumlah0++;
+                    }else{
+                        total += Float.valueOf(FMK[k].data[i][j]);
+                    }                    
                 }
-                total /= FMK.length;
+
+                total /= (FMK.length-jumlah0);
                 
                 RataMK.data[i][j] = String.valueOf(total);
                 
