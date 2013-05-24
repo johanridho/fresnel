@@ -22,40 +22,21 @@ public class FresnelVolume {
     public LinkedList<Raypath> garis;
     
 
-    public Point getReceiver() {
-        return Receiver;
-    }
-    public Point getSource() {
-        return Source;
-    }
-
-    Point Source;   // titik posisi source
-    Point Receiver; // titik posisi receiver
-    float tobs;     // jarak source-receiver
-
-    float[] arraySP;    // jarak source ke P
-    float[] arrayRP;    // jarak receiver ke P
-    float[] arrayTCal;  // tcal = tsp + trp
-    float[] deltaT;     // dT = tobs - tcal
-    float[][] bobotij;    // wij
-    float[] slowness;   // Si
-    float[] slownessAkhir;   // Sik+1
-    float[] slownessAkhirRata;   // Sik+1
-    float[] kecepatanModel;   // Sik+1
-    float[] kecepatanModelRata;   // Sik+1
+//    float tobs;     // jarak source-receiver
+     
+//    float[] jmlRayPerSel;     // N
+//    float[] bobotRata;  // Bobot rata-rata per sel
     
-    
-    float[] deltaSi;    
-    float[] jmlRayPerSel;     // N
-    float[] bobotRata;  // Bobot rata-rata per sel
-    float[] sigma;
-    float[] deltaSiRata;
-    
-    float velo;          // velocity
+//    float velo;          // velocity
     float f;             // frekuensi
-    float lSR;
+//    float lSR;
     
-    Point[] arraySrcRcv = {new Point(20, 20), new Point(70, 70)};
+    Point[] arraySrcRcv = {
+        new Point(0, 48), 
+        new Point(96, 48), 
+        new Point(48, 0),
+        new Point(48, 96)
+    };
     
     /**
      * 
@@ -63,11 +44,12 @@ public class FresnelVolume {
      */
     public FresnelVolume (MatriksKecepatan _MK) {
         // TO DO : bikin MK, Source, Receiver supaya jadi array
-        MK = _MK;
-        FMK = new MatriksKecepatan[10];
+        MK = new MatriksKecepatan(_MK);
+        FMK = new MatriksKecepatan[6];
         for (int i=0; i<FMK.length; i++) {
 //            FMK[i] = new MatriksKecepatan(96,96);
-            FMK[i] = _MK;
+//            FMK[i] = new MatriksKecepatan(_MK);
+            FMK[i] = new MatriksKecepatan(_MK.getP(),_MK.getL());
         }
 //        FMK[0] = _MK;
         
@@ -78,10 +60,45 @@ public class FresnelVolume {
 //        f = 500;
         
         
-//        makeEllipse (1,new Point(40, 20),new Point(50, 70));
-        makeEllipse (0,new Point(20, 20),new Point(70, 70));
+        Thread t0 = new Thread(new Runnable() {
+            public void run() {
+                makeEllipse (0, arraySrcRcv[0], arraySrcRcv[1]);
+                makeEllipse (1, arraySrcRcv[0], arraySrcRcv[2]);
+                
+            }
+        });
+        
+        Thread t3 = new Thread(new Runnable() {
+            public void run() {
+                makeEllipse (2, arraySrcRcv[0], arraySrcRcv[3]);
+                makeEllipse (3, arraySrcRcv[1], arraySrcRcv[2]);                
+            }
+        });
+        
+        Thread t4 = new Thread(new Runnable() {
+            public void run() {
+                makeEllipse (4, arraySrcRcv[1], arraySrcRcv[3]);
+                makeEllipse (5, arraySrcRcv[2], arraySrcRcv[3]);
+            }
+        });
+        
+        t3.start();
+        t4.start();
+        t0.start();
+        
+//        makeEllipse (0, arraySrcRcv[0], arraySrcRcv[1]);
+//        makeEllipse (1, arraySrcRcv[0], arraySrcRcv[2]);
+//        makeEllipse (2, arraySrcRcv[0], arraySrcRcv[3]);
+//        makeEllipse (3, arraySrcRcv[1], arraySrcRcv[2]);
+//        makeEllipse (4, arraySrcRcv[1], arraySrcRcv[3]);
+//        makeEllipse (5, arraySrcRcv[2], arraySrcRcv[3]);
+        
+//        makeEllipse (2,new Point(60, 20),new Point(30, 70));
         
         
+        while(t3.isAlive() ||t4.isAlive() ||t0.isAlive()){          //loop utk memastikan thread sudah mati smua
+            
+        }
         
         hitungRataMK();
         
@@ -92,17 +109,18 @@ public class FresnelVolume {
             }
             System.out.println("");
         } // --- END 1 ---
-        System.out.println("Nilai Min : "+RataMK.getminv());
-        System.out.println("Nilai Max : "+RataMK.getmaxv());
+        System.out.println("Nilai Min akhir: "+RataMK.getminv());
+        System.out.println("Nilai Max akhir: "+RataMK.getmaxv());
         System.out.println("P : "+RataMK.getP());
         System.out.println("L : "+RataMK.getL());
+        System.out.println("end...");
         
     }
     
     private void makeEllipse (int iFMK, Point p1, Point p2) {
         
-        Source = new Point(p1);
-        Receiver = new Point(p2);
+        Point Source = new Point(p1);
+        Point Receiver = new Point(p2);
         
 //        int r = MK.getP()/2;
 //        double sdt =  Math.toRadians(90.0);
@@ -113,20 +131,20 @@ public class FresnelVolume {
         System.out.println(Source.x+" "+Source.y);
         System.out.println(Receiver.x+" "+Receiver.y);
         
-        arraySP = new float[MK.getL()*MK.getP()];
-        arrayRP = new float[MK.getL()*MK.getP()];
-        arrayTCal = new float[MK.getL()*MK.getP()];
-        deltaT = new float[MK.getL()*MK.getP()];
-        deltaSi = new float[MK.getL()*MK.getP()];
-        sigma = new float[MK.getL()*MK.getP()];
-        deltaSiRata = new float[MK.getL()*MK.getP()];
-        slowness = new float[MK.getL()*MK.getP()];
-        slownessAkhir = new float[MK.getL()*MK.getP()];
-        slownessAkhirRata = new float[MK.getL()*MK.getP()];
-        kecepatanModel = new float[MK.getL()*MK.getP()];
-        kecepatanModelRata = new float[MK.getL()*MK.getP()];
+        float[] arraySP = new float[MK.getL()*MK.getP()];
+        float[] arrayRP = new float[MK.getL()*MK.getP()];
+        float[] arrayTCal = new float[MK.getL()*MK.getP()];
+        float[] deltaT = new float[MK.getL()*MK.getP()];
+        float[] deltaSi = new float[MK.getL()*MK.getP()];
+        float[] sigma = new float[MK.getL()*MK.getP()];
+        float[] deltaSiRata = new float[MK.getL()*MK.getP()];
+        float[] slowness = new float[MK.getL()*MK.getP()];
+        float[] slownessAkhir = new float[MK.getL()*MK.getP()];
+        float[] slownessAkhirRata = new float[MK.getL()*MK.getP()];
+        float[] kecepatanModel = new float[MK.getL()*MK.getP()];
+        float[] kecepatanModelRata = new float[MK.getL()*MK.getP()];
         
-        bobotij = new float[MK.getL()*MK.getP()][];
+        float[][]bobotij = new float[MK.getL()*MK.getP()][];
         garis = new LinkedList();
         
         // Loop 1 : Hitung distance dan time
@@ -139,7 +157,7 @@ public class FresnelVolume {
                     arraySP[idx] = distance(Source,new Point(i,j))/velo_now;
                     arrayRP[idx] = distance(Receiver,new Point(i,j))/velo_now;
                     arrayTCal[idx] = hitungArrayTCal(arraySP[idx], arrayRP[idx]);     
-                    tobs = distance(Source,Receiver)/velo_now;           
+                    float tobs = distance(Source,Receiver)/velo_now;           
                     deltaT[idx] = hitungDeltaT(arrayTCal[idx], tobs);
                 } else {
                     // kalo ga, 0
@@ -161,7 +179,6 @@ public class FresnelVolume {
                 int idx = i*MK.getL()+j;
                 bobotij[idx] = new float[MK.getL()*MK.getP()];
                 Point Persegi = new Point(i,j);
-                garis.add(new Raypath(Source,Persegi,Receiver));
                 
                 float totalw = 0f;
                 // Loop 2.1 : Cari jumRayPerSel, bobot, totalw
@@ -182,7 +199,8 @@ public class FresnelVolume {
                 } // --- END 2.1 ---
                 
                // Loop 2.2 : Cari sigma
-                float sik = 1/velo;
+                float velo_now = Float.valueOf(MK.data[j][i]);
+                float sik = 1/velo_now;
                 for (int k=0;k<MK.getP();k++){
                     for(int l=0;l<MK.getL();l++){
                         int jdx = k*MK.getL()+l;
@@ -232,6 +250,19 @@ public class FresnelVolume {
         } // --- END 2 ---
         FMK[iFMK].setMaxMinVal();
         
+        for (int i=0;i<FMK[iFMK].getP();i++){
+            for(int j=0;j<FMK[iFMK].getL();j++){
+                int idx = i*FMK[iFMK].getL()+j;
+                System.out.print( FMK[iFMK].data[i][j]+" ");
+            }
+            System.out.println("");
+        } // --- END 1 ---
+        System.out.println("Nilai Min : "+FMK[iFMK].getminv());
+        System.out.println("Nilai Max : "+FMK[iFMK].getmaxv());
+        System.out.println("P : "+FMK[iFMK].getP());
+        System.out.println("L : "+FMK[iFMK].getL());
+        
+        System.out.println("FMK "+iFMK+" done.....");
     }
     
     private float hitungArrayTCal (float SP, float RP) {
@@ -260,7 +291,7 @@ public class FresnelVolume {
 //        System.out.println(pusat.x+" "+pusat.y);
 //        float kiri = (j-pusat.x);
 //        float kanan = (i-pusat.y);
-        return Math.pow((kiri/b),2) + Math.pow((kanan/a),2)<1;
+        return Math.pow((kiri/a),2) + Math.pow((kanan/b),2)<1;
     }
     private float distance(Point P, Point Q) {
         return  (float)Math.sqrt((P.x-Q.x)*(P.x-Q.x) + (P.y-Q.y)*(P.y-Q.y));
