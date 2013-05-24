@@ -17,7 +17,7 @@ public class FresnelVolume {
      * 
      */
     public MatriksKecepatan MK;
-    public MatriksKecepatan[] FMK;
+    public MatriksKecepatan[] FMK;      //array penampung semua kemungkinan matriks source-receiver, misal matriks source x receiver y, matrisk source a receiver b, dst
     public MatriksKecepatan RataMK;
     public LinkedList<Raypath> garis;
     
@@ -31,11 +31,12 @@ public class FresnelVolume {
     float f;             // frekuensi
 //    float lSR;
     
-    Point[] arraySrcRcv = {
+    Point[] arraySrcRcv = {                 //array penampung point yg dipake sbg source & receiver
         new Point(0, 48), 
         new Point(96, 48), 
         new Point(48, 0),
-        new Point(48, 96)
+        new Point(48, 96),
+//        new Point(2, 44)
     };
     
     /**
@@ -45,13 +46,20 @@ public class FresnelVolume {
     public FresnelVolume (MatriksKecepatan _MK) {
         // TO DO : bikin MK, Source, Receiver supaya jadi array
         MK = new MatriksKecepatan(_MK);
-        FMK = new MatriksKecepatan[6];
+        
+        int aa = arraySrcRcv.length;
+        int jmlSrcRcv = 0;
+        while(aa!=0){
+            jmlSrcRcv+=aa;
+            aa--;
+        }
+        
+        FMK = new MatriksKecepatan[jmlSrcRcv];                          
         for (int i=0; i<FMK.length; i++) {
 //            FMK[i] = new MatriksKecepatan(96,96);
 //            FMK[i] = new MatriksKecepatan(_MK);
             FMK[i] = new MatriksKecepatan(_MK.getP(),_MK.getL());
         }
-//        FMK[0] = _MK;
         
         Point p = new Point(MK.getP()/2, MK.getL()/2);
         
@@ -60,11 +68,39 @@ public class FresnelVolume {
 //        f = 500;
         
         
+//        System.out.println("aaaaaaa"+jmlSrcRcv);
+        
+        boolean[][] booleanIJ = new  boolean[arraySrcRcv.length][arraySrcRcv.length];   //boolean buat nentuin source receiver pp sama ppp sudah pernah ktemu ato ngga, true klo udh ktemu
+        for(int pp=0;pp<booleanIJ.length;pp++){
+            for(int ppp=0;ppp<booleanIJ.length;ppp++){
+                booleanIJ[pp][ppp]= false;
+            }
+        }
+        
+        /*----------------------------------------loop buat bikin elips ke FMK[iterasiFMK], isi thread nanti hrs dimasukin sini --------------------------------------------*/
+        int iterasiFMK=0;
+            for(int a=0;a<arraySrcRcv.length;a++ ){
+                for(int b=0;b<arraySrcRcv.length;b++){
+                    if(arraySrcRcv[a]!=arraySrcRcv[b] && !booleanIJ[a][b] && !booleanIJ[b][a]){
+//                        makeEllipse(iterasiFMK, arraySrcRcv[a], arraySrcRcv [b]);
+                        System.out.println("--------------");
+                        System.out.println(iterasiFMK);
+                        System.out.println("aaaa = "+a);
+                        System.out.println("bbbb = "+b);                        
+                        iterasiFMK++;
+                        booleanIJ[a][b]=true;
+                        booleanIJ[b][a]=true;
+                    }else{
+                        
+                    }
+                }
+            }
+        
+         /*----------------------------------------pindahin ke loop di atas --------------------------------------------*/
         Thread t0 = new Thread(new Runnable() {
             public void run() {
                 makeEllipse (0, arraySrcRcv[0], arraySrcRcv[1]);
-                makeEllipse (1, arraySrcRcv[0], arraySrcRcv[2]);
-                
+                makeEllipse (1, arraySrcRcv[0], arraySrcRcv[2]);                
             }
         });
         
@@ -86,19 +122,11 @@ public class FresnelVolume {
         t4.start();
         t0.start();
         
-//        makeEllipse (0, arraySrcRcv[0], arraySrcRcv[1]);
-//        makeEllipse (1, arraySrcRcv[0], arraySrcRcv[2]);
-//        makeEllipse (2, arraySrcRcv[0], arraySrcRcv[3]);
-//        makeEllipse (3, arraySrcRcv[1], arraySrcRcv[2]);
-//        makeEllipse (4, arraySrcRcv[1], arraySrcRcv[3]);
-//        makeEllipse (5, arraySrcRcv[2], arraySrcRcv[3]);
-        
-//        makeEllipse (2,new Point(60, 20),new Point(30, 70));
-        
-        
         while(t3.isAlive() ||t4.isAlive() ||t0.isAlive()){          //loop utk memastikan thread sudah mati smua
             
         }                
+        /*----------------------------------------pindahin ke loop di atas --------------------------------------------*/
+        
         
         hitungRataMK();
         
@@ -338,7 +366,7 @@ public class FresnelVolume {
         
     }
     
-    public void hitungRataMK () {
+    public void hitungRataMK () {               //hitung rata2 dari nilai kecepatan tiap grid dari matriks di dalam array FMK yg nge-intersect matriks di array FMK lain
         RataMK = new MatriksKecepatan(FMK[0]);
         for (int i=0;i<MK.getP();i++){
             for(int j=0;j<MK.getL();j++){
