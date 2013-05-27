@@ -21,6 +21,8 @@ public class FresnelVolume {
     public MatriksKecepatan RataMK;     //matriks penampung rata2 dari isi array FMK
     public LinkedList<Raypath> garis;
     
+    private long durasi;
+    private long waktuMulai;
 
 //    float tobs;     // jarak source-receiver
      
@@ -44,6 +46,8 @@ public class FresnelVolume {
      * @param _MK
      */
     public FresnelVolume (MatriksKecepatan _MK) {
+        
+        waktuMulai = System.currentTimeMillis();
         
         MK = new MatriksKecepatan(_MK);
         
@@ -143,6 +147,8 @@ public class FresnelVolume {
         System.out.println("L : "+RataMK.getL());
         System.out.println("end...");
         
+        durasi = (System.currentTimeMillis() - waktuMulai) / 1000;        
+        System.out.println("lama perhitungan total : "+durasi+" seconds");
     }
     
     private void makeEllipse (int iFMK, Point p1, Point p2) {
@@ -289,6 +295,9 @@ public class FresnelVolume {
         System.out.println("Nilai Max : "+FMK[iFMK].getmaxv());
         System.out.println("P : "+FMK[iFMK].getP());
         System.out.println("L : "+FMK[iFMK].getL());
+        
+        durasi = (System.currentTimeMillis() - waktuMulai) / 1000;        
+        System.out.println("lama perhitungan FMK "+iFMK+": "+durasi+ " seconds");
         
         System.out.println("FMK "+iFMK+" done.....");
     }
