@@ -18,7 +18,7 @@ public class FresnelVolume {
      */
     public MatriksKecepatan MK;
     public MatriksKecepatan[] FMK;      //array penampung semua kemungkinan matriks source-receiver, misal matriks source x receiver y, matrisk source a receiver b, dst
-    public MatriksKecepatan RataMK;
+    public MatriksKecepatan RataMK;     //matriks penampung rata2 dari isi array FMK
     public LinkedList<Raypath> garis;
     
 
@@ -31,12 +31,12 @@ public class FresnelVolume {
     float f;             // frekuensi
 //    float lSR;
     
-    Point[] arraySrcRcv = {                 //array penampung point yg dipake sbg source & receiver
-        new Point(0, 48), 
-        new Point(96, 48), 
-        new Point(48, 0),
-        new Point(48, 96),
-//        new Point(2, 44)
+    Point[] arraySrcRcv = {                 //array penampung point yg dipake sbg source & receiver, nambah source-receiver di sini
+        new Point(0, 48),           //source-receiver #1
+        new Point(96, 48),          //source-receiver #2
+        new Point(48, 0),           //source-receiver #3
+        new Point(48, 96),          //source-receiver #4
+//        new Point(2, 44)          //dst
     };
     
     /**
@@ -44,11 +44,11 @@ public class FresnelVolume {
      * @param _MK
      */
     public FresnelVolume (MatriksKecepatan _MK) {
-        // TO DO : bikin MK, Source, Receiver supaya jadi array
+        
         MK = new MatriksKecepatan(_MK);
         
-        int aa = arraySrcRcv.length;
-        int jmlSrcRcv = 0;
+        int aa = arraySrcRcv.length;    
+        int jmlSrcRcv = 0;                  
         while(aa!=0){
             jmlSrcRcv+=aa;
             aa--;
@@ -77,12 +77,12 @@ public class FresnelVolume {
             }
         }
         
-        /*----------------------------------------loop buat bikin elips ke FMK[iterasiFMK], isi thread nanti hrs dimasukin sini --------------------------------------------*/
+        /*----------------------------------------loop buat bikin elips ke FMK[iterasiFMK], isi thread nanti hrs dimasukin sini, ato loop ini yg dimasukin ke thread --------------------------------------------*/
         int iterasiFMK=0;
             for(int a=0;a<arraySrcRcv.length;a++ ){
                 for(int b=0;b<arraySrcRcv.length;b++){
                     if(arraySrcRcv[a]!=arraySrcRcv[b] && !booleanIJ[a][b] && !booleanIJ[b][a]){
-//                        makeEllipse(iterasiFMK, arraySrcRcv[a], arraySrcRcv [b]);
+                        makeEllipse(iterasiFMK, arraySrcRcv[a], arraySrcRcv [b]);
                         System.out.println("--------------");
                         System.out.println(iterasiFMK);
                         System.out.println("aaaa = "+a);
@@ -96,41 +96,41 @@ public class FresnelVolume {
                 }
             }
         
-         /*----------------------------------------pindahin ke loop di atas --------------------------------------------*/
-        Thread t0 = new Thread(new Runnable() {
-            public void run() {
-                makeEllipse (0, arraySrcRcv[0], arraySrcRcv[1]);
-                makeEllipse (1, arraySrcRcv[0], arraySrcRcv[2]);                
-            }
-        });
-        
-        Thread t3 = new Thread(new Runnable() {
-            public void run() {
-                makeEllipse (2, arraySrcRcv[0], arraySrcRcv[3]);
-                makeEllipse (3, arraySrcRcv[1], arraySrcRcv[2]);                
-            }
-        });
-        
-        Thread t4 = new Thread(new Runnable() {
-            public void run() {
-                makeEllipse (4, arraySrcRcv[1], arraySrcRcv[3]);
-                makeEllipse (5, arraySrcRcv[2], arraySrcRcv[3]);
-            }
-        });
-        
-        t3.start();
-        t4.start();
-        t0.start();
-        
-        while(t3.isAlive() ||t4.isAlive() ||t0.isAlive()){          //loop utk memastikan thread sudah mati smua
-            
-        }                
+         /*----------------------------------------thread buat makeellips, pindahin ke loop di atas --------------------------------------------*/
+//        Thread t0 = new Thread(new Runnable() {
+//            public void run() {
+//                makeEllipse (0, arraySrcRcv[0], arraySrcRcv[1]);
+//                makeEllipse (1, arraySrcRcv[0], arraySrcRcv[2]);                
+//            }
+//        });
+//        
+//        Thread t3 = new Thread(new Runnable() {
+//            public void run() {
+//                makeEllipse (2, arraySrcRcv[0], arraySrcRcv[3]);
+//                makeEllipse (3, arraySrcRcv[1], arraySrcRcv[2]);                
+//            }
+//        });
+//        
+//        Thread t4 = new Thread(new Runnable() {
+//            public void run() {
+//                makeEllipse (4, arraySrcRcv[1], arraySrcRcv[3]);
+//                makeEllipse (5, arraySrcRcv[2], arraySrcRcv[3]);
+//            }
+//        });
+//        
+//        t3.start();
+//        t4.start();
+//        t0.start();
+//        
+//        while(t3.isAlive() ||t4.isAlive() ||t0.isAlive()){          //loop utk memastikan thread sudah mati smua
+//            
+//        }                
         /*----------------------------------------pindahin ke loop di atas --------------------------------------------*/
         
         
         hitungRataMK();
         
-        for (int i=0;i<RataMK.getP();i++){
+        for (int i=0;i<RataMK.getP();i++){              //print isi RataMK
             for(int j=0;j<RataMK.getL();j++){
                 int idx = i*RataMK.getL()+j;
                 System.out.print( RataMK.data[i][j]+" ");
