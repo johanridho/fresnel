@@ -30,7 +30,7 @@ public class FresnelVolume {
 //    float[] bobotRata;  // Bobot rata-rata per sel
     
 //    float velo;          // velocity
-    float f;             // frekuensi
+    float frekuensi;             // frekuensi
 //    float lSR;
     
     Point[] arraySrcRcv = {                 //array penampung point yg dipake sbg source & receiver, nambah source-receiver di sini
@@ -69,7 +69,7 @@ public class FresnelVolume {
         
            
 //        velo = 1000;      
-//        f = 500;
+//        frekuensi = 500;
         
         
 //        System.out.println("aaaaaaa"+jmlSrcRcv);
@@ -309,10 +309,10 @@ public class FresnelVolume {
         return Math.abs(tobs - TCal);
     }
     private float hitungBobotij (float deltaT) {
-        if (deltaT >= (f/2))
+        if (deltaT >= (frekuensi/2))
             return 0;
         else
-            return 1-2*f*deltaT;
+            return 1-2*frekuensi*deltaT;
     }
     
     private boolean isDalamEllips (int i, int j, Point P, Point Q) {
