@@ -1,0 +1,11 @@
+dist/*
+dist-linux-amd64/*
+dist-linux-i586/*
+dist-macosx-ppc/*
+dist-macosx-universal/*
+dist-solaris-i586/*
+dist-solaris-sparc/*
+dist-solaris-sparcv9/*
+dist-windows-amd64/*
+dist-windows-i586/*
+build/*

@@ -85,6 +85,7 @@ public class Ruang2D  extends JPanel implements GLEventListener, MouseListener, 
             MK = Reader.readtomv();
         } catch (IOException ex) {}
         penggambar = new Penggambar(MK);
+        System.out.println(MK.getL()+" asdasdaasdasdaasdasdaasdasdaasdasdaasdasdaasdasdaasdasdaasdasdaasdasdaasdasdaasdasdaasdasdaasdasdaasdasda ");
         kamera = new Camera(layarx, layary, penggambar.getnx()/2, penggambar.getny()/2, jarak);
     }
     public Ruang2D(int _layarx, int _layary) {

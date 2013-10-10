@@ -1,5 +1,6 @@
 package Ruang2D;
 
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 
@@ -10,7 +11,7 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
 
-class ReaderExcel {
+public class ReaderExcel {
     
 //  public ReadExcel(){
 //      Matriks2000 = new String[100][100];
@@ -101,5 +102,48 @@ class ReaderExcel {
                      
       return MV;
   }
+  
+  public float[] bacaTobs() throws IOException  {
+      
+      float[] arrayTobs = new float[1];
+      
+      File inputWorkbook = new File(inputFile);
+      Workbook w;
+    
+      try {
+          w = Workbook.getWorkbook(inputWorkbook);          
+          Sheet sheet = w.getSheet(0);              // Get the first sheet
+          arrayTobs = new float[sheet.getRows()];
+                  
+          for (int i = 0; i < sheet.getRows(); i++) {            
+              Cell cell = sheet.getCell(0, i);
+              CellType type = cell.getType();         
+              arrayTobs[i] = Float.parseFloat(cell.getContents());
+//                arrayTobs[i] = cell.getContents();
+          }          
+          
+      } catch (BiffException e) {
+          e.printStackTrace();
+        }
+      
+      return arrayTobs;
+  }
+  
+  // Membaca File Source dan Receiver
+    public void BacaSR(String File_Name,FresnelVolume fresnelvolume) throws IOException{
+        try {
+            File InputFile = new File(File_Name);
+            Workbook W = Workbook.getWorkbook(InputFile);
+            double X;
+            double Y;
+            for(int i=0;i<W.getSheet(0).getRows();i++){
+                X = Double.valueOf(W.getSheet(0).getCell(0/*kolom*/, i/*baris*/).getContents().replace(",","."));
+                Y = Double.valueOf(W.getSheet(0).getCell(1/*kolom*/, i/*baris*/).getContents().replace(",","."));
+                fresnelvolume.arraySrcRcv[i] =  new Point2D.Double(X,Y);
+            }
+        } catch (BiffException ex) {
+//            Logger.getLogger(Pembaca.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
-} 
+}//end class 
