@@ -10,6 +10,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCanvas;
@@ -121,7 +123,11 @@ public class Ruang2D  extends JPanel implements GLEventListener, MouseListener, 
         drawable.addMouseListener(this);
         drawable.addMouseMotionListener(this);
         drawable.addMouseWheelListener(this);
-        penggambar.tes();
+        try {
+            penggambar.tes();
+        } catch (IOException ex) {
+            Logger.getLogger(Ruang2D.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }
     public void display(GLAutoDrawable drawable) {

@@ -130,20 +130,24 @@ public class ReaderExcel {
   }
   
   // Membaca File Source dan Receiver
-    public void BacaSR(String File_Name,FresnelVolume fresnelvolume) throws IOException{
+    public Point2D.Double[] BacaSR(String File_Name) throws IOException{
+        Point2D.Double[] arraySR = new Point2D.Double[0];
         try {
             File InputFile = new File(File_Name);
             Workbook W = Workbook.getWorkbook(InputFile);
             double X;
             double Y;
+            arraySR = new Point2D.Double[W.getSheet(0).getRows()];
             for(int i=0;i<W.getSheet(0).getRows();i++){
                 X = Double.valueOf(W.getSheet(0).getCell(0/*kolom*/, i/*baris*/).getContents().replace(",","."));
                 Y = Double.valueOf(W.getSheet(0).getCell(1/*kolom*/, i/*baris*/).getContents().replace(",","."));
-                fresnelvolume.arraySrcRcv[i] =  new Point2D.Double(X,Y);
+                arraySR[i] =  new Point2D.Double(X,Y);
             }
+            
         } catch (BiffException ex) {
 //            Logger.getLogger(Pembaca.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return arraySR;
     }
 
 }//end class 

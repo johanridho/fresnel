@@ -82,14 +82,13 @@ public class FresnelVolume {
     public FresnelVolume (MatriksKecepatan _MK) throws IOException {
         
         waktuMulai = System.currentTimeMillis();
-        
-        arraySrcRcv = new Point2D.Double[27];
+                
         ReaderExcel readerExcel = new ReaderExcel();
-        readerExcel.BacaSR("sr.xls", this);
-//        for(int aaa=0;aaa<arraySrcRcv.length;aaa++){
-//            System.out.println(arraySrcRcv[aaa]);
-//        }
-//        
+        arraySrcRcv = readerExcel.BacaSR("sr.xls");
+        for(int aaa=0;aaa<arraySrcRcv.length;aaa++){
+            System.out.println(arraySrcRcv[aaa]);
+        }
+        
         MK = new MatriksKecepatan(_MK);
         
         int aa = arraySrcRcv.length;    
@@ -480,18 +479,20 @@ public class FresnelVolume {
                 float total = 0f;       
                 int jumlah0 = 0;
                 
-//                for (int k=0; k<FMK.length; k++) {                
-//                        total += Float.valueOf(FMK[k].data[i][j]);                    
-//                }
-//                total /= (FMK.length);
-                
-                for (int k=0; k<FMK.length; k++) {
-                    if(Float.valueOf(FMK[k].data[i][j])==0.0 || Float.valueOf(FMK[k].data[i][j]).isNaN() ){
-                        jumlah0++;
-                    }else{
-                        total += Float.valueOf(FMK[k].data[i][j]);
-                    }                    
+                //klo dua elips beririsan, ngga diapa-apain, biar sapuannya kelihatan
+                for (int k=0; k<FMK.length; k++) {                
+                        total += Float.valueOf(FMK[k].data[i][j]);                    
                 }
+                total /= (FMK.length);
+                
+                //klo dua elips beririsan, hitung rata2nya
+//                for (int k=0; k<FMK.length; k++) {
+//                    if(Float.valueOf(FMK[k].data[i][j])==0.0 || Float.valueOf(FMK[k].data[i][j]).isNaN() ){
+//                        jumlah0++;
+//                    }else{
+//                        total += Float.valueOf(FMK[k].data[i][j]);
+//                    }                    
+//                }
 
                 total /= (FMK.length-jumlah0);
                 

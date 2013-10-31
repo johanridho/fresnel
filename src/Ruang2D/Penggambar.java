@@ -8,6 +8,7 @@ import com.sun.opengl.util.GLUT;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
+import java.io.IOException;
 import java.util.LinkedList;
 import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
@@ -226,7 +227,7 @@ public class Penggambar {
     
     // ------ fresnel volume
     
-    public void tes() {
+    public void tes() throws IOException {
 
         FresnelVolume F = new FresnelVolume(MK);
         OMK = F.MK;
